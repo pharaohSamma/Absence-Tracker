@@ -1,0 +1,115 @@
+<!-- src/app/student/absence-history/absence-history.component.html -->
+<div class="bg-white shadow rounded-lg p-6">
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-2xl font-semibold text-gray-900">
+      Historique des absences
+    </h1>
+
+    <div>
+      <label class="mr-2">Période:</label>
+      <select
+        [(ngModel)]="selectedPeriod"
+        (change)="onPeriodChange()"
+        class="form-input w-48"
+      >
+        <option *ngFor="let period of periods" [value]="period.value">
+          {{ period.label }}
+        </option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Loading state -->
+  <div *ngIf="loading" class="text-center py-10">
+    <p class="text-gray-500">Chargement...</p>
+  </div>
+
+  <!-- Absence statistics -->
+  <div *ngIf="!loading" class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <div class="card">
+      <h3 class="text-lg font-medium mb-2">Total des absences</h3>
+      <p class="text-3xl font-bold">{{ getAbsencesStats().total }}</p>
+    </div>
+
+    <div class="card">
+      <h3 class="text-lg font-medium mb-2">Absences justifiées</h3>
+      <p class="text-3xl font-bold text-green-600">
+        {{ getAbsencesStats().justified }}
+        <span class="text-sm font-normal ml-2">
+          ({{ getAbsencesStats().justifiedPercentage }}%)
+        </span>
+      </p>
+    </div>
+
+    <div class="card">
+      <h3 class="text-lg font-medium mb-2">Absences non justifiées</h3>
+      <p class="text-3xl font-bold text-red-600">
+        {{ getAbsencesStats().unjustified }}
+        <span class="text-sm font-normal ml-2">
+          ({{ getAbsencesStats().unjustifiedPercentage }}%)
+        </span>
+      </p>
+    </div>
+  </div>
+
+  <!-- Absences list -->
+  <div *ngIf="!loading" class="overflow-x-auto">
+    <table class="min-w-full divide-y divide-gray-200">
+      <thead class="bg-gray-50">
+        <tr>
+          <th
+            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+          >
+            Date
+          </th>
+          <th
+            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+          >
+            Cours
+          </th>
+          <th
+            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+          >
+            Enseignant
+          </th>
+          <th
+            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+          >
+            Statut
+          </th>
+          <th
+            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+          >
+            Raison
+          </th>
+        </tr>
+      </thead>
+      <tbody class="bg-white divide-y divide-gray-200">
+        <tr *ngFor="let absence of absences">
+          <td class="px-6 py-4 whitespace-nowrap">
+            {{ absence.date | date : "dd/MM/yyyy" }}
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap">{{ absence.course }}</td>
+          <td class="px-6 py-4 whitespace-nowrap">{{ absence.teacher }}</td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            <span
+              [ngClass]="{
+                'bg-green-100 text-green-800': absence.justified,
+                'bg-red-100 text-red-800': !absence.justified
+              }"
+              class="px-2 py-1 text-xs rounded-full"
+            >
+              {{ absence.justified ? "Justifiée" : "Non justifiée" }}
+            </span>
+          </td>
+          <td class="px-6 py-4">{{ absence.reason || "Non spécifiée" }}</td>
+        </tr>
+        <tr *ngIf="absences.length === 0">
+          <td colspan="5" class="px-6 py-4 text-center text-gray-500">
+            Aucune absence enregistrée pour cette période.
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

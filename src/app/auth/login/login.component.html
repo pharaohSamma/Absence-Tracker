@@ -1,0 +1,98 @@
+<!-- src/app/auth/login/login.component.html -->
+<div class="min-h-screen flex justify-center items-center bg-gray-50">
+  <div class="max-w-md w-full p-6">
+    <!-- Header -->
+    <div class="text-center mb-10">
+      <h1 class="text-3xl font-bold text-primary">Gestion des Absences</h1>
+      <p class="text-gray-600 mt-2">
+        Connectez-vous pour accéder à votre espace
+      </p>
+    </div>
+
+    <!-- Login Form -->
+    <div class="card">
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+        <!-- Email Field -->
+        <div class="mb-6">
+          <label for="email" class="block text-gray-700 mb-2">Email</label>
+          <input
+            type="email"
+            id="email"
+            formControlName="email"
+            placeholder="vous@exemple.fr"
+            class="form-input"
+          />
+          <div
+            *ngIf="
+              loginForm.get('email')?.invalid && loginForm.get('email')?.touched
+            "
+            class="text-red-500 text-sm mt-1"
+          >
+            Email invalide
+          </div>
+        </div>
+
+        <!-- Password Field -->
+        <div class="mb-6">
+          <label for="password" class="block text-gray-700 mb-2"
+            >Mot de passe</label
+          >
+          <input
+            type="password"
+            id="password"
+            formControlName="password"
+            placeholder="******"
+            class="form-input"
+          />
+          <div
+            *ngIf="
+              loginForm.get('password')?.invalid &&
+              loginForm.get('password')?.touched
+            "
+            class="text-red-500 text-sm mt-1"
+          >
+            Mot de passe requis (min. 6 caractères)
+          </div>
+        </div>
+
+        <!-- Error message -->
+        <div *ngIf="error" class="mb-4 p-3 bg-red-100 text-red-700 rounded-md">
+          {{ error }}
+        </div>
+
+        <!-- Login Button -->
+        <button
+          type="submit"
+          [disabled]="loginForm.invalid || loading"
+          class="btn-primary w-full"
+        >
+          <span *ngIf="!loading">Connexion</span>
+          <span *ngIf="loading">Chargement...</span>
+        </button>
+      </form>
+
+      <!-- Forgot Password Link -->
+      <div class="text-center mt-4">
+        <a
+          routerLink="/auth/forgot-password"
+          class="text-primary hover:underline"
+          >Mot de passe oublié?</a
+        >
+      </div>
+
+      <!-- Demo Account Information -->
+      <div class="mt-8 text-center text-sm text-gray-600">
+        <p class="mb-2">Pour la démo, utilisez ces modèles d'emails:</p>
+        <div class="grid grid-cols-2 gap-2 mt-2">
+          <div>admin@ecole.fr</div>
+          <div>teacher@ecole.fr</div>
+          <div>student@ecole.fr</div>
+          <div>parent@ecole.fr</div>
+        </div>
+        <p class="mt-4">
+          Mot de passe: n'importe quel mot de passe de 6+ caractères
+        </p>
+      </div>
+    </div>
+  </div>
+</div>

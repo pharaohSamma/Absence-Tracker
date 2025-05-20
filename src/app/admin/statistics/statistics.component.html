@@ -1,0 +1,123 @@
+<!-- src/app/admin/statistics/statistics.component.html -->
+<div class="bg-white shadow rounded-lg p-6">
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-2xl font-semibold text-gray-900">
+      Statistiques des absences
+    </h1>
+
+    <div class="flex space-x-4">
+      <div>
+        <label class="mr-2">Période:</label>
+        <select
+          [(ngModel)]="selectedPeriod"
+          (change)="onFilterChange()"
+          class="form-input w-40"
+        >
+          <option *ngFor="let period of periods" [value]="period.value">
+            {{ period.label }}
+          </option>
+        </select>
+      </div>
+
+      <div>
+        <label class="mr-2">Classe:</label>
+        <select
+          [(ngModel)]="selectedClass"
+          (change)="onFilterChange()"
+          class="form-input w-48"
+        >
+          <option *ngFor="let class of classes" [value]="class.value">
+            {{ class.label }}
+          </option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading state -->
+  <div *ngIf="loading" class="text-center py-10">
+    <p class="text-gray-500">Chargement...</p>
+  </div>
+
+  <!-- Statistics content -->
+  <div *ngIf="!loading">
+    <!-- Overview cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
+      <div class="card">
+        <h3 class="text-sm font-medium text-gray-500 mb-2">Total absences</h3>
+        <p class="text-3xl font-bold">{{ overallStats.totalAbsences }}</p>
+      </div>
+
+      <div class="card">
+        <h3 class="text-sm font-medium text-gray-500 mb-2">
+          Absences justifiées
+        </h3>
+        <p class="text-3xl font-bold text-green-600">
+          {{ overallStats.justifiedAbsences }}
+        </p>
+      </div>
+
+      <div class="card">
+        <h3 class="text-sm font-medium text-gray-500 mb-2">
+          Absences non justifiées
+        </h3>
+        <p class="text-3xl font-bold text-red-600">
+          {{ overallStats.unjustifiedAbsences }}
+        </p>
+      </div>
+
+      <div class="card">
+        <h3 class="text-sm font-medium text-gray-500 mb-2">Nombre d'élèves</h3>
+        <p class="text-3xl font-bold">{{ overallStats.totalStudents }}</p>
+      </div>
+
+      <div class="card">
+        <h3 class="text-sm font-medium text-gray-500 mb-2">
+          Moyenne par élève
+        </h3>
+        <p class="text-3xl font-bold">
+          {{ overallStats.avgAbsencesPerStudent | number : "1.1-2" }}
+        </p>
+      </div>
+    </div>
+
+    <!-- Charts grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <!-- Absences by class chart -->
+      <div class="card h-80">
+        <h3 class="text-lg font-medium mb-4">Absences par classe</h3>
+        <!-- Chart component would go here -->
+        <div class="h-full">
+          <canvas id="absencesByClassChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Absences by subject chart -->
+      <div class="card h-80">
+        <h3 class="text-lg font-medium mb-4">Absences par matière</h3>
+        <!-- Chart component would go here -->
+        <div class="h-full">
+          <canvas id="absencesBySubjectChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Absences by month chart -->
+      <div class="card h-80">
+        <h3 class="text-lg font-medium mb-4">Évolution des absences</h3>
+        <!-- Chart component would go here -->
+        <div class="h-full">
+          <canvas id="absencesByMonthChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Justification ratio chart -->
+      <div class="card h-80">
+        <h3 class="text-lg font-medium mb-4">Ratio des justifications</h3>
+        <!-- Chart component would go here -->
+        <div class="h-full">
+          <canvas id="justificationRatioChart"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

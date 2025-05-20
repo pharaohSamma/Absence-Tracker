@@ -1,0 +1,111 @@
+<!-- src/app/teacher/dashboard/dashboard.component.html -->
+<div class="bg-gray-50 min-h-screen">
+  <!-- Header -->
+  <header class="bg-white shadow">
+    <div
+      class="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8 flex justify-between items-center"
+    >
+      <h1 class="text-2xl font-bold text-gray-900">
+        Tableau de bord de l'enseignant
+      </h1>
+      <button class="btn-primary">Enregistrer des absences</button>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+    <!-- Loading state -->
+    <div *ngIf="loading" class="text-center py-10">
+      <p class="text-gray-500">Chargement...</p>
+    </div>
+
+    <!-- Dashboard content -->
+    <div
+      *ngIf="!loading"
+      class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+    >
+      <!-- Absence summary card -->
+      <div class="card">
+        <h2 class="text-lg font-semibold mb-4">Résumé des absences</h2>
+        <div class="grid grid-cols-3 gap-4 text-center">
+          <div>
+            <div class="text-2xl font-bold text-gray-800">
+              {{ absenceSummary.total }}
+            </div>
+            <div class="text-gray-500 text-sm">Total</div>
+          </div>
+          <div>
+            <div class="text-2xl font-bold text-success">
+              {{ absenceSummary.justified }}
+            </div>
+            <div class="text-gray-500 text-sm">Justifiées</div>
+          </div>
+          <div>
+            <div class="text-2xl font-bold text-danger">
+              {{ absenceSummary.unjustified }}
+            </div>
+            <div class="text-gray-500 text-sm">Non Justifiées</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Classes card -->
+      <div class="card">
+        <h2 class="text-lg font-semibold mb-4">Mes classes</h2>
+        <ul class="divide-y">
+          <li *ngFor="let class of classes" class="py-2">
+            <a
+              [routerLink]="['/teacher/class', class.id]"
+              class="flex justify-between items-center hover:bg-gray-50 p-2 rounded-md"
+            >
+              <span>{{ class.name }}</span>
+              <span class="text-sm text-gray-500"
+                >{{ class.studentCount }} élèves</span
+              >
+            </a>
+          </li>
+          <li
+            *ngIf="classes.length === 0"
+            class="py-4 text-center text-gray-500"
+          >
+            Aucune classe assignée
+          </li>
+        </ul>
+      </div>
+
+      <!-- Recent absences -->
+      <div class="card">
+        <h2 class="text-lg font-semibold mb-4">Absences récentes</h2>
+        <ul class="divide-y">
+          <li *ngFor="let absence of recentAbsences" class="py-2">
+            <div class="flex justify-between">
+              <div>
+                <div class="font-medium">{{ absence.studentName }}</div>
+                <div class="text-sm text-gray-500">
+                  {{ absence.date | date : "dd/MM/yyyy" }}
+                </div>
+              </div>
+              <div>
+                <span
+                  [ngClass]="{
+                    'bg-green-100 text-green-800': absence.justified,
+                    'bg-red-100 text-red-800': !absence.justified
+                  }"
+                  class="px-2 py-1 text-xs rounded-full"
+                >
+                  {{ absence.justified ? "Justifiée" : "Non justifiée" }}
+                </span>
+              </div>
+            </div>
+          </li>
+          <li
+            *ngIf="recentAbsences.length === 0"
+            class="py-4 text-center text-gray-500"
+          >
+            Aucune absence récente
+          </li>
+        </ul>
+      </div>
+    </div>
+  </main>
+</div>
