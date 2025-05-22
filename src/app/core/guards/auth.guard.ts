@@ -2,12 +2,11 @@
 import { Injectable } from '@angular/core';
 import {
   CanActivate,
+  Router,
   ActivatedRouteSnapshot,
   RouterStateSnapshot,
-  Router,
 } from '@angular/router';
-import { Observable } from 'rxjs';
-import { map, take } from 'rxjs/operators';
+import { Observable, map } from 'rxjs';
 import { AuthService } from '../services/auth.service';
 
 @Injectable({
@@ -19,28 +18,29 @@ export class AuthGuard implements CanActivate {
   canActivate(
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
-  ): Observable<boolean> | Promise<boolean> | boolean {
-    if (!this.authService.isLoggedIn()) {
-      this.router.navigate(['/auth/login']);
-      return false;
-    }
-
-    // Check for role authorization if specified
-    if (route.data['roles']) {
-      return this.authService.getUserRole().pipe(
-        take(1),
-        map((role) => {
-          const authorized = route.data['roles'].includes(role);
-          if (!authorized) {
-            // Redirect based on actual role
-            this.redirectBasedOnRole(role);
+  ): Observable<boolean> {
+    return this.authService.currentUser$.pipe(
+      map((user) => {
+        if (user) {
+          const role = user.role;
+          if (role) {
+            // Check if user has access to this route
+            const expectedRoles = route.data?.['roles'] as Array<string>;
+            if (expectedRoles && !expectedRoles.includes(role)) {
+              this.redirectBasedOnRole(role);
+              return false;
+            }
+            return true;
           }
-          return authorized;
-        })
-      );
-    }
+        }
 
-    return true;
+        // Not logged in or no role, redirect to login
+        this.router.navigate(['/auth/login'], {
+          queryParams: { returnUrl: state.url },
+        });
+        return false;
+      })
+    );
   }
 
   private redirectBasedOnRole(role: string): void {
@@ -58,7 +58,7 @@ export class AuthGuard implements CanActivate {
         this.router.navigate(['/parent/dashboard']);
         break;
       default:
-        this.router.navigate(['/auth/login']);
+        this.router.navigate(['/']);
     }
   }
 }

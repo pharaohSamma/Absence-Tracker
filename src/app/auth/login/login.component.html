@@ -1,38 +1,43 @@
 <!-- src/app/auth/login/login.component.html -->
 <div class="min-h-screen flex justify-center items-center bg-gray-50">
   <div class="max-w-md w-full p-6">
-    <!-- Header -->
-    <div class="text-center mb-10">
-      <h1 class="text-3xl font-bold text-primary">Gestion des Absences</h1>
-      <p class="text-gray-600 mt-2">
-        Connectez-vous pour accéder à votre espace
-      </p>
+    <div class="text-center mb-8">
+      <h1 class="text-3xl font-bold text-primary">Connexion</h1>
+      <p class="text-gray-600 mt-2">Bienvenue dans le système de gestion</p>
     </div>
 
-    <!-- Login Form -->
-    <div class="card">
+    <div class="bg-white rounded-lg shadow-md p-8">
+      <div *ngIf="error" class="mb-6 p-3 bg-red-100 text-red-700 rounded-md">
+        {{ error }}
+      </div>
+
       <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-        <!-- Email Field -->
         <div class="mb-6">
-          <label for="username" class="block text-gray-700 mb-2">username</label>
+          <label for="username" class="block text-gray-700 mb-2"
+            >Nom d'utilisateur</label
+          >
           <input
-            type="username"
+            type="text"
             id="username"
             formControlName="username"
-            placeholder="vous@exemple.fr"
-            class="form-input"
+            class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            [ngClass]="{
+              'border-red-500':
+                loginForm.get('username')?.invalid &&
+                loginForm.get('username')?.touched
+            }"
           />
           <div
             *ngIf="
-              loginForm.get('email')?.invalid && loginForm.get('email')?.touched
+              loginForm.get('username')?.invalid &&
+              loginForm.get('username')?.touched
             "
             class="text-red-500 text-sm mt-1"
           >
-            Email invalide
+            Nom d'utilisateur requis
           </div>
         </div>
 
-        <!-- Password Field -->
         <div class="mb-6">
           <label for="password" class="block text-gray-700 mb-2"
             >Mot de passe</label
@@ -41,8 +46,12 @@
             type="password"
             id="password"
             formControlName="password"
-            placeholder="******"
-            class="form-input"
+            class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            [ngClass]="{
+              'border-red-500':
+                loginForm.get('password')?.invalid &&
+                loginForm.get('password')?.touched
+            }"
           />
           <div
             *ngIf="
@@ -51,48 +60,54 @@
             "
             class="text-red-500 text-sm mt-1"
           >
-            Mot de passe requis (min. 6 caractères)
+            <span *ngIf="loginForm.get('password')?.errors?.['required']"
+              >Mot de passe requis</span
+            >
+            <span *ngIf="loginForm.get('password')?.errors?.['minlength']"
+              >Le mot de passe doit contenir au moins 6 caractères</span
+            >
           </div>
         </div>
 
-        <!-- Error message -->
-        <div *ngIf="error" class="mb-4 p-3 bg-red-100 text-red-700 rounded-md">
-          {{ error }}
+        <div class="mb-6 text-right">
+          <a
+            routerLink="/auth/forgot-password"
+            class="text-blue-600 hover:underline"
+            >Mot de passe oublié?</a
+          >
         </div>
 
-        <!-- Login Button -->
         <button
           type="submit"
           [disabled]="loginForm.invalid || loading"
-          class="btn-primary w-full"
+          class="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          <span *ngIf="!loading">Connexion</span>
-          <span *ngIf="loading">Chargement...</span>
+          <span *ngIf="!loading">Se connecter</span>
+          <div *ngIf="loading" class="flex justify-center items-center">
+            <svg
+              class="animate-spin h-5 w-5 text-white mr-2"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <circle
+                class="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                stroke-width="4"
+              ></circle>
+              <path
+                class="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+              ></path>
+            </svg>
+            Connexion en cours...
+          </div>
         </button>
       </form>
-
-      <!-- Forgot Password Link -->
-      <div class="text-center mt-4">
-        <a
-          routerLink="/auth/forgot-password"
-          class="text-primary hover:underline"
-          >Mot de passe oublié?</a
-        >
-      </div>
-
-      <!-- Demo Account Information -->
-      <div class="mt-8 text-center text-sm text-gray-600">
-        <p class="mb-2">Pour la démo, utilisez ces modèles d'emails:</p>
-        <div class="grid grid-cols-2 gap-2 mt-2">
-          <div>admin@ecole.fr</div>
-          <div>teacher@ecole.fr</div>
-          <div>student@ecole.fr</div>
-          <div>parent@ecole.fr</div>
-        </div>
-        <p class="mt-4">
-          Mot de passe: n'importe quel mot de passe de 6+ caractères
-        </p>
-      </div>
     </div>
   </div>
 </div>

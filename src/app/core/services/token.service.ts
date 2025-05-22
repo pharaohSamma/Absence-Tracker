@@ -5,19 +5,23 @@ import { Injectable } from '@angular/core';
   providedIn: 'root',
 })
 export class TokenService {
-  private readonly TOKEN_KEY = 'auth_token';
+  private readonly tokenKey = 'auth_token';
 
   constructor() {}
 
-  getToken(): string | null {
-    return localStorage.getItem(this.TOKEN_KEY);
+  saveToken(token: string): void {
+    localStorage.setItem(this.tokenKey, token);
   }
 
-  saveToken(token: string): void {
-    localStorage.setItem(this.TOKEN_KEY, token);
+  getToken(): string | null {
+    return localStorage.getItem(this.tokenKey);
   }
 
   removeToken(): void {
-    localStorage.removeItem(this.TOKEN_KEY);
+    localStorage.removeItem(this.tokenKey);
+  }
+
+  hasToken(): boolean {
+    return this.getToken() !== null;
   }
 }

@@ -5,24 +5,29 @@ import {
   HttpHandler,
   HttpEvent,
   HttpInterceptor,
-  HttpErrorResponse,
 } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
-import { catchError } from 'rxjs/operators';
-import { Router } from '@angular/router';
+import { Observable } from 'rxjs';
 import { TokenService } from '../services/token.service';
 
 @Injectable()
 export class JwtInterceptor implements HttpInterceptor {
-  constructor(private tokenService: TokenService, private router: Router) {}
+  constructor(private tokenService: TokenService) {}
 
   intercept(
     request: HttpRequest<unknown>,
     next: HttpHandler
   ): Observable<HttpEvent<unknown>> {
+    // Skip adding token for login requests
+    if (request.url.includes('/auth/login')) {
+      return next.handle(request);
+    }
+
+    // Get token from token service
     const token = this.tokenService.getToken();
 
+    // Clone request and add auth header if token exists
     if (token) {
+      console.log('Adding Authorization header');
       request = request.clone({
         setHeaders: {
           Authorization: `Bearer ${token}`,
@@ -30,15 +35,6 @@ export class JwtInterceptor implements HttpInterceptor {
       });
     }
 
-    return next.handle(request).pipe(
-      catchError((error: HttpErrorResponse) => {
-        // Handle 401 Unauthorized errors
-        if (error.status === 401) {
-          this.tokenService.removeToken();
-          this.router.navigate(['/auth/login']);
-        }
-        return throwError(error);
-      })
-    );
+    return next.handle(request);
   }
 }
