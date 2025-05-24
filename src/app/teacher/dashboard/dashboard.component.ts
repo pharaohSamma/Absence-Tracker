@@ -1,51 +1,32 @@
 // src/app/teacher/dashboard/dashboard.component.ts
 import { Component, OnInit } from '@angular/core';
-import { AbsenceService } from '../../core/services/absence.service';
-import { ClassInfo } from 'src/app/interfaces/class-info';
-import { AbsenceInfo } from 'src/app/interfaces/absence-info';
+import { AuthService } from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-teacher-dashboard',
-  templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.css']
+  template: `
+    <div class="p-6">
+      <h1 class="text-3xl font-bold text-gray-900 mb-6">Tableau de bord Enseignant</h1>
+      <div class="bg-white rounded-lg shadow-md p-6">
+        <h2 class="text-xl font-semibold mb-4">Bonjour {{ getUserName() }}!</h2>
+        <p class="text-gray-600">Bienvenue dans votre espace enseignant.</p>
+      </div>
+    </div>
+  `
 })
 export class DashboardComponent implements OnInit {
-  classes: ClassInfo[] = [];
-  absenceSummary = {
-    total: 0,
-    justified: 0,
-    unjustified: 0
-  };
-  recentAbsences: AbsenceInfo[] = [];
-  loading = true;
-
-  constructor(private absenceService: AbsenceService) { }
+  
+  constructor(private authService: AuthService) { }
 
   ngOnInit(): void {
-    this.loadDashboardData();
+    console.log('Teacher dashboard loaded');
   }
 
-  loadDashboardData(): void {
-    // Get teacher's classes
-    this.absenceService.getTeacherClasses().subscribe(
-      (data: ClassInfo[]) => {
-        this.classes = data;
-        this.loading = false;
-      }
-    );
-
-    // Get absence summary
-    this.absenceService.getTeacherAbsenceSummary().subscribe(
-      data => {
-        this.absenceSummary = data;
-      }
-    );
-
-    // Get recent absences
-    this.absenceService.getRecentAbsences().subscribe(
-      (data: AbsenceInfo[]) => {
-        this.recentAbsences = data;
-      }
-    );
+  getUserName(): string {
+    const user = this.authService.getCurrentUserValue();
+    if (user?.firstName && user?.lastName) {
+      return `${user.firstName} ${user.lastName}`;
+    }
+    return user?.username || 'Enseignant';
   }
 }

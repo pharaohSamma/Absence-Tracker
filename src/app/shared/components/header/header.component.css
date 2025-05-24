@@ -1,0 +1,83 @@
+/* Custom animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Dropdown animations */
+.absolute.top-full {
+  animation: fadeIn 0.2s ease-out;
+}
+
+/* Notification badge pulse */
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.bg-red-500 {
+  animation: pulse 2s infinite;
+}
+
+/* Hover effects */
+.hover\\:bg-gray-100:hover {
+  transition: all 0.15s ease;
+}
+
+.hover\\:bg-gray-50:hover {
+  transition: all 0.15s ease;
+}
+
+/* User avatar gradient */
+.bg-gradient-to-r {
+  background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+}
+
+/* Custom scrollbar for notifications */
+.max-h-96::-webkit-scrollbar {
+  width: 4px;
+}
+
+.max-h-96::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+.max-h-96::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 2px;
+}
+
+.max-h-96::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+  .hidden.sm\\:block {
+    display: none !important;
+  }
+}

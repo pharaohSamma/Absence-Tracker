@@ -1,0 +1,20 @@
+/* Layout specific styles */
+.min-h-screen {
+  min-height: 100vh;
+}
+
+main {
+  margin-top: 0; /* Header is sticky, so no top margin needed */
+  padding-top: 1rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .flex {
+    flex-direction: column;
+  }
+
+  main {
+    padding: 1rem;
+  }
+}

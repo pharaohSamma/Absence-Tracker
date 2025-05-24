@@ -1,19 +1,15 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { LayoutComponent } from './components/layout/layout.component';
-import { SidebarComponent } from './components/sidebar/sidebar.component';
+import { RouterModule } from '@angular/router';
+
+// Import components
 import { HeaderComponent } from './components/header/header.component';
-
-
+import { SidebarComponent } from './components/sidebar/sidebar.component';
+import { LayoutComponent } from './components/layout/layout.component';
 
 @NgModule({
-  declarations: [
-    LayoutComponent,
-    SidebarComponent,
-    HeaderComponent
-  ],
-  imports: [
-    CommonModule
-  ]
+  declarations: [HeaderComponent, SidebarComponent, LayoutComponent],
+  imports: [CommonModule, RouterModule],
+  exports: [HeaderComponent, SidebarComponent, LayoutComponent],
 })
-export class SharedModule { }
+export class SharedModule {}

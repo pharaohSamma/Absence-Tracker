@@ -9,36 +9,32 @@ import { User } from 'src/app/interfaces/user';
 import { LoginResponse } from 'src/app/interfaces/login-response';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AuthService {
   private currentUserSubject = new BehaviorSubject<User | null>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
 
-  constructor(
-    private http: HttpClient,
-    private tokenService: TokenService
-  ) {
+  constructor(private http: HttpClient, private tokenService: TokenService) {
     // Don't automatically load profile on startup if it's failing
     // We'll handle this differently
   }
 
   login(username: string, password: string): Observable<LoginResponse> {
-    console.log('AuthService: login attempt with username', username);
-    
-    return this.http.post<LoginResponse>(`${environment.apiUrl}/auth/login`, { username, password })
+
+    return this.http
+      .post<LoginResponse>(`${environment.apiUrl}/auth/login`, {
+        username,
+        password,
+      })
       .pipe(
-        tap(response => {
-          console.log('Login response in AuthService:', response);
-          
+        tap((response) => {
+
           if (response && response.token) {
             // Save token first
             this.tokenService.saveToken(response.token);
-            console.log('Token saved successfully');
-            
             // Check if user data is in the response
             if (response.user) {
-              console.log('Setting current user from login response:', response.user);
               this.currentUserSubject.next(response.user);
             } else if (response.username && response.role) {
               // Sometimes the user data is at the root level of the response
@@ -47,33 +43,46 @@ export class AuthService {
                 username: response.username,
                 email: response.email,
                 name: response.username,
-                role: response.role as 'ADMIN' | 'TEACHER' | 'STUDENT' | 'PARENT'
+                role: response.role as
+                  | 'ADMIN'
+                  | 'TEACHER'
+                  | 'STUDENT'
+                  | 'PARENT',
+                firstName: response.firstName,
+                lastName: response.lastName,
               };
               console.log('Creating user from root level response data:', user);
               this.currentUserSubject.next(user);
             } else {
-              console.log('No user data in response, will try to load from profile endpoint');
+              console.log(
+                'No user data in response, will try to load from profile endpoint'
+              );
               // Try to load from profile, but don't fail the login if it doesn't work
               this.loadUserProfile().subscribe({
                 next: (user) => {
                   if (user) {
                     console.log('Profile loaded successfully after login');
                   } else {
-                    console.log('Profile loading failed, but login was successful');
+                    console.log(
+                      'Profile loading failed, but login was successful'
+                    );
                   }
                 },
                 error: (error) => {
-                  console.error('Profile loading failed after login, but continuing anyway:', error);
+                  console.error(
+                    'Profile loading failed after login, but continuing anyway:',
+                    error
+                  );
                   // Create a minimal user object if we can't load the profile
                   this.createFallbackUser(username);
-                }
+                },
               });
             }
           } else {
             console.error('No token in login response');
           }
         }),
-        catchError(error => {
+        catchError((error) => {
           console.error('Login API error:', error);
           return throwError(() => error);
         })
@@ -87,7 +96,9 @@ export class AuthService {
       id: 1,
       username: username,
       name: username,
-      role: 'ADMIN' // Default role - you might want to decode this from the JWT
+      role: 'ADMIN', // Default role - you might want to decode this from the JWT
+      firstName: '',
+      lastName: '',
     };
     console.log('Creating fallback user:', fallbackUser);
     this.currentUserSubject.next(fallbackUser);
@@ -112,25 +123,27 @@ export class AuthService {
     }
 
     console.log('Loading user profile from API...');
-    return this.http.get<User>(`${environment.apiUrl}/auth/me`)
-      .pipe(
-        tap(user => {
-          console.log('User profile loaded from API:', user);
-          this.currentUserSubject.next(user);
-        }),
-        catchError(error => {
-          console.error('Error loading user profile:', error);
-          // Don't logout on profile loading error - the token might still be valid
-          // Just return null and let the app continue
-          return of(null);
-        })
-      );
+    return this.http.get<User>(`${environment.apiUrl}/auth/me`).pipe(
+      tap((user) => {
+        console.log('User profile loaded from API:', user);
+        this.currentUserSubject.next(user);
+      }),
+      catchError((error) => {
+        console.error('Error loading user profile:', error);
+        // Don't logout on profile loading error - the token might still be valid
+        // Just return null and let the app continue
+        return of(null);
+      })
+    );
   }
 
   getUserRole(): Observable<string | null> {
-    console.log('getUserRole called, current user value:', this.currentUserSubject.value);
+    console.log(
+      'getUserRole called, current user value:',
+      this.currentUserSubject.value
+    );
     return this.currentUser$.pipe(
-      map(user => {
+      map((user) => {
         const role = user ? user.role : null;
         console.log('Getting role for user:', user, 'role:', role);
         return role;
@@ -168,13 +181,15 @@ export class AuthService {
     try {
       const payload = JSON.parse(atob(token.split('.')[1]));
       console.log('Decoded token payload:', payload);
-      
+
       // Extract user info from token payload
       return {
         id: payload.sub || payload.id || 1,
         username: payload.username || payload.sub,
         name: payload.name || payload.username,
-        role: payload.role || 'ADMIN'
+        role: payload.role || 'ADMIN',
+        firstName: payload.firstName,
+        lastName: payload.lastName,
       };
     } catch (error) {
       console.error('Error decoding token:', error);

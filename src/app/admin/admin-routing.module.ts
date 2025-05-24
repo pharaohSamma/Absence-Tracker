@@ -13,9 +13,7 @@ const routes: Routes = [
     path: 'dashboard',
     component: DashboardComponent,
   },
-  // Add more admin routes here as needed
-  // { path: 'users', component: UsersComponent },
-  // { path: 'settings', component: SettingsComponent }
+  // Add more admin routes here
 ];
 
 @NgModule({
